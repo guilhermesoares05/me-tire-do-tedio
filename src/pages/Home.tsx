@@ -4,6 +4,7 @@ import { useChat } from '@/hooks/useChat';
 import { AppStatus } from '@/types';
 import { AuthScreen } from '@/pages/AuthScreen';
 import { HistoryScreen } from '@/pages/HistoryScreen';
+import { ProfileScreen } from '@/pages/ProfileScreen';
 import { ChatScreen } from '@/pages/ChatScreen';
 import { VerdictCard } from '@/components/VerdictCard';
 
@@ -42,6 +43,14 @@ export const Home: React.FC = () => {
           >
             Histórico
           </button>
+
+          <button
+            onClick={() => setStatus(AppStatus.PROFILE)}
+            className={`text-[10px] font-black uppercase transition-colors tracking-widest ${status === AppStatus.PROFILE ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+          >
+            Perfil
+          </button>
+
           <div className="w-px h-3 bg-white/10" />
           <button
             onClick={logout}
@@ -50,7 +59,9 @@ export const Home: React.FC = () => {
             Sair
           </button>
           {user.photoURL && (
-            <img src={user.photoURL} alt={user.displayName || ''} className="w-8 h-8 rounded-full border border-white/10" />
+            <button onClick={() => setStatus(AppStatus.PROFILE)} className="outline-none rounded-full transition-transform active:scale-95">
+              <img src={user.photoURL} alt={user.displayName || ''} className={`w-8 h-8 rounded-full border ${status === AppStatus.PROFILE ? 'border-indigo-500' : 'border-white/10'}`} />
+            </button>
           )}
         </div>
       </header>
@@ -58,6 +69,8 @@ export const Home: React.FC = () => {
       <main className="flex-1 relative overflow-hidden flex flex-col items-center min-h-0">
         {status === AppStatus.HISTORY ? (
           <HistoryScreen userId={user.uid} onBack={() => setStatus(AppStatus.CHATTING)} />
+        ) : status === AppStatus.PROFILE ? (
+          <ProfileScreen userId={user.uid} onBack={() => setStatus(AppStatus.CHATTING)} />
         ) : status === AppStatus.FINISHED && verdict ? (
           <VerdictCard verdict={verdict} onReset={resetChat} />
         ) : (
