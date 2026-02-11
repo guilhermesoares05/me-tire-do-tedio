@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { Verdict, Message, ChatResponse } from "@/types";
+import { Verdict, Message, ChatResponse, FavoriteMovie } from "@/types";
 
 const SYSTEM_INSTRUCTION = `Você é o "Me Tire do Tédio", um amigo cinéfilo, engraçado e viciado em streaming. 
 Seu objetivo é descobrir o que o usuário deve assistir usando papo reto e sensações. 
@@ -98,6 +98,34 @@ export class GeminiService {
       const client = this.getClient();
       const prompt = `Beleza, atingi a confiança necessária. Com base no papo, escolhe 1 filme e 1 série que vão explodir a cabeça do usuário.
       Histórico: ${history.map(m => `${m.role}: ${m.text}`).join('\n')}`;
+
+      const response = await client.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: VERDICT_SCHEMA,
+        },
+      });
+
+      return JSON.parse(response.text || '{}') as Verdict;
+    } catch (e) {
+      console.error("Gemini Error:", e);
+      throw e;
+    }
+  }
+
+  async getRecommendationFromHistory(history: Verdict[], favorites: FavoriteMovie[]): Promise<Verdict> {
+    try {
+      const client = this.getClient();
+      const prompt = `Analise o gosto do usuário com base no histórico e favoritos. Sugira 1 filme e 1 série NOVOS (que não estejam no histórico nem nos favoritos).
+
+      Histórico de Recomendações:
+      ${history.map(h => `- Filme: ${h.movie.title} (${h.movie.vibe}), Série: ${h.series.title} (${h.series.vibe})`).join('\n')}
+
+      Filmes Favoritos:
+      ${favorites.map(f => `- ${f.title} (${f.genre})`).join('\n')}
+      `;
 
       const response = await client.models.generateContent({
         model: "gemini-3-flash-preview",

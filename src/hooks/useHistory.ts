@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/services/firebase';
 import { Verdict } from '@/types';
 
@@ -29,5 +29,21 @@ export const useHistory = (userId: string | undefined) => {
     fetchHistory();
   }, [userId]);
 
-  return { history, loading };
+  const addHistoryItem = async (verdict: Verdict) => {
+    if (!userId) return;
+    try {
+      const docRef = await addDoc(collection(db, `users/${userId}/history`), {
+        ...verdict,
+        createdAt: Timestamp.now()
+      });
+
+      const newVerdict = { ...verdict, id: docRef.id, createdAt: Timestamp.now() };
+      setHistory(prev => [newVerdict, ...prev]);
+    } catch (error) {
+      console.error("Error adding history item:", error);
+      throw error;
+    }
+  };
+
+  return { history, loading, addHistoryItem };
 };
