@@ -1,13 +1,12 @@
-
 import React from 'react';
-import { Verdict } from '@/types';
+import { Verdict, Recommendation } from '@/types';
 
 interface VerdictCardProps {
   verdict: Verdict;
   onReset: () => void;
 }
 
-const RecommendationBlock: React.FC<{ label: string; data: any }> = ({ label, data }) => (
+const RecommendationBlock: React.FC<{ label: string; data: Recommendation }> = ({ label, data }) => (
   <div className="flex-1 p-6 rounded-2xl glass border-t border-white/10 animate-fade-in flex flex-col h-full shadow-2xl">
     <div className="flex items-center gap-2 mb-4">
       <span className="px-3 py-1 text-[10px] uppercase font-black tracking-widest bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-white shadow-lg shadow-indigo-500/20">
