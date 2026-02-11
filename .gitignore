@@ -32,3 +32,4 @@ dist-ssr
 /.firebase
 .firebaserc
 firebase.json
+prompt.json

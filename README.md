@@ -1,20 +1,28 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Me Tire do Tédio 🍿
 
-# Run and deploy your AI Studio app
+Uma experiência interativa movida por IA que recomenda filmes e séries baseando-se no seu estado emocional e sensações, fugindo dos clichês de gêneros.
 
-This contains everything you need to run your app locally.
+🔗 **Acesse aqui:** [https://me-tire-do-tedio.web.app/](https://me-tire-do-tedio.web.app/)
 
-View your app in AI Studio: https://ai.studio/apps/drive/1p7dYZuoJBqFVL_U8rUC6MVgNP91M7YUl
+## 🎯 O Problema
 
-## Run Locally
+Sabe aquele momento em que você abre o streaming e fica rolando o catálogo infinitamente sem saber o que assistir? O **Me Tire do Tédio** resolve isso.
 
-**Prerequisites:**  Node.js
+## 🚀 Como Funciona
 
+A aplicação utiliza Inteligência Artificial para atuar como seu "curador cinéfilo". Através de um chat com perguntas objetivas e diretas, a IA entende seus gostos e o seu momento atual para fazer uma sugestão certeira.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## ✨ Funcionalidades
+
+- **Chat com IA:** Interação rápida para diagnóstico do seu "vibe".
+- **Veredito Personalizado:** Sugestão de 1 filme e 1 série com justificativas.
+- **Histórico de Sessões:** Todas as suas recomendações ficam salvas para consulta futura.
+- **Sugestão Baseada no Histórico:** Na tela de histórico, utilize suas sugestões passadas para gerar novas recomendações.
+- **Login Google:** Acesso simples e seguro com sua conta Google.
+
+## 🛠️ Tecnologias
+
+- React
+- Google Gemini AI
+- Firebase (Authentication & Firestore)
+- Tailwind CSS
