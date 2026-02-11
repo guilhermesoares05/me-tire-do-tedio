@@ -69,7 +69,7 @@ export class GeminiService {
     try {
       const client = this.getClient();
       const response = await client.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: history.map(m => ({
           role: m.role,
           parts: [{ text: m.text }]
@@ -100,7 +100,7 @@ export class GeminiService {
       Histórico: ${history.map(m => `${m.role}: ${m.text}`).join('\n')}`;
 
       const response = await client.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           responseMimeType: "application/json",
@@ -128,7 +128,7 @@ export class GeminiService {
       `;
 
       const response = await client.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           responseMimeType: "application/json",
