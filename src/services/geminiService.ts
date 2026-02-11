@@ -1,6 +1,5 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
-import { Verdict, Message, ChatResponse } from "../types";
+import { Verdict, Message, ChatResponse } from "@/types";
 
 const SYSTEM_INSTRUCTION = `Você é o "Me Tire do Tédio", um amigo cinéfilo, engraçado e viciado em streaming. 
 Seu objetivo é descobrir o que o usuário deve assistir usando papo reto e sensações. 
@@ -53,47 +52,66 @@ const VERDICT_SCHEMA = {
 };
 
 export class GeminiService {
-  private ai: GoogleGenAI;
+  private ai: GoogleGenAI | null = null;
 
-  constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  private getClient(): GoogleGenAI {
+    if (!this.ai) {
+      const apiKey = process.env.API_KEY;
+      if (!apiKey) {
+        throw new Error("Gemini API Key is missing");
+      }
+      this.ai = new GoogleGenAI({ apiKey });
+    }
+    return this.ai;
   }
 
   async getChatResponse(history: Message[]): Promise<ChatResponse> {
-    const response = await this.ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: history.map(m => ({
-        role: m.role,
-        parts: [{ text: m.text }]
-      })),
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.8,
-        responseMimeType: "application/json",
-        responseSchema: CHAT_SCHEMA,
-      },
-    });
-
     try {
-      return JSON.parse(response.text || '{}') as ChatResponse;
+      const client = this.getClient();
+      const response = await client.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: history.map(m => ({
+          role: m.role,
+          parts: [{ text: m.text }]
+        })),
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION,
+          temperature: 0.8,
+          responseMimeType: "application/json",
+          responseSchema: CHAT_SCHEMA,
+        },
+      });
+
+      try {
+        return JSON.parse(response.text || '{}') as ChatResponse;
+      } catch (e) {
+        return { text: "Foi mal, meu cérebro deu um glitch. Repete aí?", confidence: 30 };
+      }
     } catch (e) {
-      return { text: "Foi mal, meu cérebro deu um glitch. Repete aí?", confidence: 30 };
+      console.error("Gemini Error:", e);
+      return { text: "Erro na conexão com a IA. Verifique a chave de API.", confidence: 0 };
     }
   }
 
   async getVerdict(history: Message[]): Promise<Verdict> {
-    const prompt = `Beleza, atingi a confiança necessária. Com base no papo, escolhe 1 filme e 1 série que vão explodir a cabeça do usuário.
-    Histórico: ${history.map(m => `${m.role}: ${m.text}`).join('\n')}`;
+    try {
+      const client = this.getClient();
+      const prompt = `Beleza, atingi a confiança necessária. Com base no papo, escolhe 1 filme e 1 série que vão explodir a cabeça do usuário.
+      Histórico: ${history.map(m => `${m.role}: ${m.text}`).join('\n')}`;
 
-    const response = await this.ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: VERDICT_SCHEMA,
-      },
-    });
+      const response = await client.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: VERDICT_SCHEMA,
+        },
+      });
 
-    return JSON.parse(response.text || '{}') as Verdict;
+      return JSON.parse(response.text || '{}') as Verdict;
+    } catch (e) {
+      console.error("Gemini Error:", e);
+      throw e;
+    }
   }
 }
