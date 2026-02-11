@@ -30,7 +30,11 @@ export const useChat = (userId: string | undefined) => {
     setVerdict(null);
     setConfidence(25);
     setMessages([
-      { role: 'model', text: 'E aí! Sou seu guia oficial pra sair desse tédio. Pra gente começar: você tá numa vibe de querer explodir a cabeça com algo louco ou só quer relaxar e esquecer os boletos?' }
+      {
+        id: crypto.randomUUID(),
+        role: 'model',
+        text: 'E aí! Sou seu guia oficial pra sair desse tédio. Pra gente começar: você tá numa vibe de querer explodir a cabeça com algo louco ou só quer relaxar e esquecer os boletos?'
+      }
     ]);
     setStatus(AppStatus.CHATTING);
     setIsTyping(false);
@@ -45,7 +49,7 @@ export const useChat = (userId: string | undefined) => {
   const sendMessage = async () => {
     if (!inputText.trim() || status !== AppStatus.CHATTING || isTyping) return;
 
-    const userMessage: Message = { role: 'user', text: inputText };
+    const userMessage: Message = { id: crypto.randomUUID(), role: 'user', text: inputText };
     const newHistory = [...messages, userMessage];
     setMessages(newHistory);
     setInputText('');
@@ -55,11 +59,10 @@ export const useChat = (userId: string | undefined) => {
       const response = await gemini.getChatResponse(newHistory);
       setConfidence(response.confidence);
 
-      const updatedHistory = [...newHistory, { role: 'model', text: response.text } as Message];
+      const updatedHistory = [...newHistory, { id: crypto.randomUUID(), role: 'model', text: response.text } as Message];
       setMessages(updatedHistory);
 
       if (response.confidence >= 85) {
-        setIsTyping(true);
         setStatus(AppStatus.ANALYZING);
         const finalVerdict = await gemini.getVerdict(updatedHistory);
         setVerdict(finalVerdict);
@@ -68,7 +71,7 @@ export const useChat = (userId: string | undefined) => {
       }
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { role: 'model', text: 'Ih, deu ruim na conexão. Tenta de novo?' }]);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'model', text: 'Ih, deu ruim na conexão. Tenta de novo?' }]);
     } finally {
       setIsTyping(false);
     }

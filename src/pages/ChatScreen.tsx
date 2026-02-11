@@ -35,7 +35,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       <div className="flex-1 w-full max-w-2xl overflow-y-auto chat-scroll p-6 pb-32 space-y-6">
         {messages.map((msg, idx) => (
           <div
-            key={idx}
+            key={msg.id || idx}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
           >
             <div

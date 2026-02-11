@@ -56,7 +56,7 @@ export class GeminiService {
 
   private getClient(): GoogleGenAI {
     if (!this.ai) {
-      const apiKey = process.env.API_KEY;
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.API_KEY : undefined);
       if (!apiKey) {
         throw new Error("Gemini API Key is missing");
       }
@@ -101,7 +101,7 @@ export class GeminiService {
 
       const response = await client.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: prompt,
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           responseMimeType: "application/json",
           responseSchema: VERDICT_SCHEMA,

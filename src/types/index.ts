@@ -1,5 +1,7 @@
+import { Timestamp } from 'firebase/firestore';
 
 export interface Message {
+  id?: string;
   role: 'user' | 'model';
   text: string;
 }
@@ -19,7 +21,7 @@ export interface Verdict {
   id?: string;
   movie: Recommendation;
   series: Recommendation;
-  createdAt?: any;
+  createdAt?: Timestamp;
 }
 
 export enum AppStatus {
