@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Verdict } from '../types';
+import { Verdict } from '@/types';
 
 interface VerdictCardProps {
   verdict: Verdict;
